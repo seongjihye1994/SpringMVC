@@ -42,7 +42,7 @@ public class RequestHeaderServlet extends HttpServlet {
         // username=hi
         System.out.println("request.getQueryString() = " +
                 request.getQueryString());
-        System.out.println("request.isSecure() = " + request.isSecure()); //https 사용 유무
+        System.out.println("request.isSecure() = " + request.isSecure()); // https 사용 유무
         System.out.println("--- REQUEST-LINE - end ---");
         System.out.println();
     }
@@ -69,9 +69,9 @@ public class RequestHeaderServlet extends HttpServlet {
         System.out.println("--- Header 편의 조회 start ---");
         System.out.println("[Host 편의 조회]");
         System.out.println("request.getServerName() = " +
-                request.getServerName()); //Host 헤더
+                request.getServerName()); // Host 헤더
         System.out.println("request.getServerPort() = " +
-                request.getServerPort()); //Host 헤더
+                request.getServerPort()); // Host 헤더
         System.out.println();
         System.out.println("[Accept-Language 편의 조회]");
         request.getLocales().asIterator()
