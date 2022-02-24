@@ -2,11 +2,14 @@ package hello.servlet.web.frontcontroller.v5;
 
 import hello.servlet.web.frontcontroller.ModelView;
 import hello.servlet.web.frontcontroller.MyView;
-import hello.servlet.web.frontcontroller.v3.ControllerV3;
 import hello.servlet.web.frontcontroller.v3.controller.MemberFormControllerV3;
 import hello.servlet.web.frontcontroller.v3.controller.MemberListControllerV3;
 import hello.servlet.web.frontcontroller.v3.controller.MemberSaveControllerV3;
+import hello.servlet.web.frontcontroller.v4.controller.MemberFormControllerV4;
+import hello.servlet.web.frontcontroller.v4.controller.MemberListControllerV4;
+import hello.servlet.web.frontcontroller.v4.controller.MemberSaveControllerV4;
 import hello.servlet.web.frontcontroller.v5.adapter.ControllerV3HandlerAdapter;
+import hello.servlet.web.frontcontroller.v5.adapter.ControllerV4HandlerAdapter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -37,23 +40,32 @@ public class FrontControllerServletV5 extends HttpServlet {
     }
 
     private void initHandlerMappingMap() {
+        // v3
         handlerMappingMap.put("/front-controller/v5/v3/members/new-form", new MemberFormControllerV3());
         handlerMappingMap.put("/front-controller/v5/v3/members/save", new MemberSaveControllerV3());
         handlerMappingMap.put("/front-controller/v5/v3/members", new MemberListControllerV3());
+
+        // v4 추가
+       handlerMappingMap.put("/front-controller/v5/v4/members/new-form", new MemberFormControllerV4());
+        handlerMappingMap.put("/front-controller/v5/v4/members/save", new MemberSaveControllerV4());
+        handlerMappingMap.put("/front-controller/v5/v4/members", new MemberListControllerV4());
     }
 
-    private boolean initHandlerAdapters() {
+    private void initHandlerAdapters() {
         // ControllerV3HandlerAdapter 어뎁터 넣어놓기
-        return handlerAdapters.add(new ControllerV3HandlerAdapter());
+        handlerAdapters.add(new ControllerV3HandlerAdapter());
+        // ControllerV4HandlerAdapter 어뎁터 넣어놓기
+        handlerAdapters.add(new ControllerV4HandlerAdapter());
     }
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("FrontControllerServletV5.service");
 
+        // 0. 고객 요청 -> 서블릿 매핑
+
         // 1. 핸들러 매핑 정보 찾기 (v5 구조 1번)
         Object handler = getHandler(request);
-        // MemberFormControllerV3 또는 MemberSaveControllerV3 또는 MemberListControllerV3
 
         if (handler == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -64,7 +76,7 @@ public class FrontControllerServletV5 extends HttpServlet {
         MyHandlerAdapter adapter = getHandlerAdapter(handler);
         // ControllerV3HandlerAdapter
 
-        // 3_1) 핸들러 adapter 를 호출하고 모델과 뷰 리졸버 결과로 받음 (v5 사진 구조 3번)
+        // 3_1) 핸들러 어뎁터를 호출 (v5 사진 구조 3번)
         ModelView mv = adapter.handle(request, response, handler);
         // ControllerV3HandlerAdapter.handle
 
@@ -73,6 +85,8 @@ public class FrontControllerServletV5 extends HttpServlet {
         // 3_3) 컨트롤러에서 핸들러 어댑터로 뷰 논리이름과 모델 반환
 
         // 3_4) 핸들러 어댑터에서 프론트 컨트롤러로 뷰 논리이름과 모델 반환 (v5 사진 구조 5번)
+
+            // 3_1) 에서의 ModelView mv 에 뷰 논리이름과 모델이 반환됨.
 
         // 4. 핸들러 어뎁터에서 넘어온 논리 이름 new-form 빼옴
         String viewName = mv.getViewName();
@@ -101,7 +115,7 @@ public class FrontControllerServletV5 extends HttpServlet {
     }
 
     private Object getHandler(HttpServletRequest request) {
-        String requestURI = request.getRequestURI();
+        String requestURI = request.getRequestURI(); // 고객 요청 url 찾기
         return handlerMappingMap.get(requestURI);
     }
 
